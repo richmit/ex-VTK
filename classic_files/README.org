@@ -9,7 +9,6 @@ create VTK ASCII files in the legacy format.  The idea is to
 illustrate the simplest possible way to create useful geometric
 structures using these kinds VTK files.
 
-#+BEGIN_CENTER
 | Script                              | Grid Geometry  | Point Data | Vector Data   |
 |-------------------------------------+----------------+------------+---------------|
 | mk_vtk_curve_STRUCTURED_GRID.rb     | 1D Space Curve | t          | f(t)==x,y,z   |
@@ -22,7 +21,6 @@ structures using these kinds VTK files.
 | mk_vtk_surface_POLYDATA.rb          | 2D Surface     | u,v        | f(u,v)==x,y,z |
 | mk_vtk_points_UNSTRUCTURED_GRID.rb  | None           |            | x,y,z         |
 | mk_vtk_points_POLYDATA.rb           | None           |            | x,y,z         |
-#+END_CENTER
 
 Have Fun!
 
