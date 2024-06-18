@@ -7,8 +7,9 @@ really understand the file formats.
 To that end, this directory contains a collection of tiny scripts that
 create VTK ASCII files in the legacy format.  The idea is to
 illustrate the simplest possible way to create useful geometric
-structures using kinds VTK files.
+structures using these kinds VTK files.
 
+#+ATTR_HTML: :align center
    | Script                              | Grid Geometry  | Point Data | Vector Data   |
    |-------------------------------------+----------------+------------+---------------|
    | mk_vtk_curve_STRUCTURED_GRID.rb     | 1D Space Curve | t          | f(t)==x,y,z   |
@@ -22,6 +23,6 @@ structures using kinds VTK files.
    | mk_vtk_points_UNSTRUCTURED_GRID.rb  | None           |            | x,y,z         |
    | mk_vtk_points_POLYDATA.rb           | None           |            | x,y,z         |
 
-Have Fun!!
+Have Fun!
 
 -mitch
