@@ -1,0 +1,5 @@
+* ASCII XML VTK Files
+
+XML VTK files with ASCII data are just about as simple to create as
+the legacy ASCII files.  This directory contains some self-contained
+examples.

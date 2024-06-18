@@ -1,0 +1,27 @@
+
+* Legacy VTK File Examples
+
+Generating some of these files "by hand" is probably the best way to
+really understand the file formats.
+
+To that end, this directory contains a collection of tiny scripts that
+create VTK ASCII files in the legacy format.  The idea is to
+illustrate the simplest possible way to create useful geometric
+structures using kinds VTK files.
+
+   | Script                              | Grid Geometry  | Point Data | Vector Data   |
+   |-------------------------------------+----------------+------------+---------------|
+   | mk_vtk_curve_STRUCTURED_GRID.rb     | 1D Space Curve | t          | f(t)==x,y,z   |
+   | mk_vtk_curve_POLYDATA.rb            | 1D Space Curve | t          | f(t)==x,y,z   |
+   | mk_vtk_image_STRUCTURED_GRID.rb     | 2D/3D Grid     | f(x,y,z)   | x,y,z         |
+   | mk_vtk_image_RECTILINEAR_GRID.rb    | 2D/3D Grid     | f(x,y,z)   | x,y,z         |
+   | mk_vtk_image_STRUCTURED_POINTS.rb   | 2D/3D Grid     | f(x,y,z)   | x,y,z         |
+   | mk_vtk_surface_UNSTRUCTURED_GRID.rb | 2D Surface     | u,v        | f(u,v)==x,y,z |
+   | mk_vtk_surface_STRUCTURED_GRID.rb   | 2D Surface     | u,v        | f(u,v)==x,y,z |
+   | mk_vtk_surface_POLYDATA.rb          | 2D Surface     | u,v        | f(u,v)==x,y,z |
+   | mk_vtk_points_UNSTRUCTURED_GRID.rb  | None           |            | x,y,z         |
+   | mk_vtk_points_POLYDATA.rb           | None           |            | x,y,z         |
+
+Have Fun!!
+
+-mitch
