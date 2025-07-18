@@ -1,6 +1,6 @@
 * ASCII  VTK Files
 
-This project contains some leaning resources for ASCII VTK files. 
+This project contains some learning resources for ASCII VTK files. 
 
 Have Fun!
 
