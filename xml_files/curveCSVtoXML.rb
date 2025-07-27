@@ -32,54 +32,151 @@
 #  @endparblock
 # @filedetails
 #
-#  Provide the filename as the first argument.  The next three arguments should be integers representing the columns with x, y, & z.
-#  If the column numbers are not provided, the defaults are 1, 2, & 3.
+#  Provide the filename as the first argument.  The remaining arguments are of the form tag:c1[:c2[:c3[:c4]]].  One of the tags must be 'point' or 'points',
+#  and it must contain three columns.  The remainder of the arguments describe point data.
 #
 #########################################################################################################################################################.H.E.##
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------
-desc = (ARGV[0] || puts("ERROR: Provide file name on command line followed by three column numbers") || exit)
-cols = [(ARGV[1] || "1").to_i - 1, (ARGV[2] || "2").to_i - 1, (ARGV[3] || "3").to_i - 1]
+verbose = 0
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------
-points = Array.new
-open(ARGV[0], "r") do |file|
+if (ARGV.size <= 0) then
+  puts("ERROR: No arguments!")
+  puts("USE")
+  puts("  curveCSVtoXML.rb <FILE_NAME> [tag:col[:col]...]")
+  puts("  One of the 'tag' values must be 'point' with three columns")
+  puts("EXAMPLE")
+  puts("  curveCSVtoXML.rb lorenz.csv point:3:4:5 't:2'")
+  puts("")
+  exit
+end
+
+fileToProcess = ''
+sclData = Hash.new
+vecData = Hash.new
+pointCols = Array.new
+ARGV.each do |arg|
+  if (FileTest.exist?(arg)) then
+    fileToProcess = arg
+  elsif (tmp=arg.match(/^([^:]+):([0-9]+(:[0-9]+)*)$/)) then
+    tag  = tmp[1]
+    cols = tmp[2].split(':').map(&:to_i).map do |i| i-1; end
+     if ((tag == 'point') || (tag == 'points')) then
+       if (cols.length != 3) then
+         STDERR.puts("ERROR: Points data must be 3 columns.  Arg invalid: #{arg}")
+         exit
+       end
+       pointCols = cols
+     else
+       if (cols.length == 1) then
+         sclData[tag] = cols.first
+       else
+         if (cols.length > 4) then
+           STDERR.puts("ERROR: VTK only supports vectors of length 2-4.  Arg invalid: #{arg}")
+           exit
+         end
+         vecData[tag] = cols
+       end
+     end
+  else
+    STDERR.puts("UNK: #{arg}")
+    STDERR.puts("Call command with no arguments for help")
+    exit
+  end
+end
+
+if ( pointCols.empty?) then
+  pointCols = [0, 1, 2]
+  exit
+end
+
+[ ['x', 0], ['y', 1], ['z', 2]].each do |tag, col|
+  if ( !(sclData.member?(tag))) then
+    sclData[tag] = pointCols[col]
+  end
+end
+
+if (verbose > 1) then
+  STDERR.puts("File to process: #{fileToProcess.inspect}")
+  STDERR.puts("Point Cols: #{pointCols}")
+  STDERR.puts("Scalar items: #{sclData.inspect}")
+  STDERR.puts("Vector Data: #{vecData.inspect}")
+end
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------
+fileData = Array.new
+open(fileToProcess, "r") do |file|
   file.readline
   file.each_line do |line|
-    points.push(line.chomp.split(',').values_at(*cols).map(&:to_f))
+    fileData.push(line.chomp.split(','))
   end
+end
+
+if (verbose > 1) then
+  STDERR.puts("Found #{fileData.length} points in file")
 end
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------
 puts("<VTKFile type='UnstructuredGrid' version='0.1' byte_order='LittleEndian'>")
-puts("<!-- #{desc} -->")
+puts("<!-- #{fileToProcess} -->")
 puts("  <UnstructuredGrid>")
-puts("    <Piece NumberOfPoints='#{points.length}' NumberOfCells='#{points.length-1}'>")
+puts("    <Piece NumberOfPoints='#{fileData.length}' NumberOfCells='#{fileData.length-1}'>")
+sclDecl = ''
+if ( !(sclData.empty?)) then
+  sclDecl = "Scalars='" + sclData.keys.join(' ') + "'"
+end
+vecDecl = ''
+if ( !(vecData.empty?)) then
+  vecDecl = "Vectors='" + vecData.keys.join(' ') + "'"
+end
+puts("      <PointData #{sclDecl} #{vecDecl}>")
+sclData.each do |tag, col|
+  puts("        <DataArray Name='#{tag}' type='Float64' format='ascii' NumberOfComponents='1'>")
+  print("          ")
+  fileData.each do |d|
+    print("#{d[col]} ")
+  end
+  puts("")
+  puts("        </DataArray>")
+end
+vecData.each do |tag, col|
+  puts("        <DataArray Name='#{tag}' type='Float64' format='ascii' NumberOfComponents='#{col.length}'>")
+  fileData.each do |d|
+    puts("          " + d.values_at(*col).join(' '))
+  end
+  puts("        </DataArray>")
+end
+puts("      </PointData>")
 puts("      <Points>")
 puts("        <DataArray Name='Points' type='Float64' format='ascii' NumberOfComponents='3'>")
-points.each do |p|
-  puts("          #{p[0]} #{p[1]} #{p[2]}")
+fileData.each do |d|
+  puts("          " + d.values_at(*pointCols).join(' '))
 end
 puts("        </DataArray>")
 puts("      </Points>")
 puts("      <Cells>")
 puts("        <DataArray type='Int32' Name='connectivity' format='ascii'>")
-1.upto(points.length-1) do |i|
+1.upto(fileData.length-1) do |i|
   puts("          #{i-1} #{i}")
 end
 puts("        </DataArray>")
 puts("        <DataArray type='Int32' Name='offsets' format='ascii'>")
 print("          ")
-1.upto(points.length-1) do |i|
+1.upto(fileData.length-1) do |i|
   print("#{2*i} ")
 end
 puts("")
 puts("        </DataArray>")
 puts("        <DataArray type='Int8' Name='types' format='ascii'>")
-puts("          " + ('3 ' * (points.length-1)))
+puts("          " + ('3 ' * (fileData.length-1)))
 puts("        </DataArray>")
 puts("      </Cells>")
 puts("    </Piece>")
 puts("  </UnstructuredGrid>")
 puts("</VTKFile>")
+
+
+
+
 
