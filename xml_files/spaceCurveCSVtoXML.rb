@@ -35,8 +35,14 @@
 #  Provide the filename as one argument.  The remaining arguments are of the form tag:c1[:c2[:c3[:c4]]].  One of the tags must be 'point' or 'points',
 #  and it must contain three columns.  The remainder of the arguments describe point data.
 #
+#  One way to create an animation of curve evolution is to create time step vtu files:
+#    sh  -c 'for f in $(seq 100 100 5000); do head -n $f lorenz.csv > $(printf "lorenz_%05d.csv" $f); done'
+#    zsh -c 'for f in lorenz_*.csv(:r) ; do ./spaceCurveCSVtoXML.rb -v $f.csv points:3:4:5 > $f.vtu; done'
+#
 #########################################################################################################################################################.H.E.##
 
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------
+time = false
 verbose = 0
 fileToProcess = nil
 sclData = Hash.new
@@ -67,8 +73,11 @@ ARGV.each do |arg|
      end
   elsif (arg.match(/^-+[hH]/)) then
     puts("USE")
-    puts("  curveCSVtoXML.rb <FILE_NAME> [tag:col[:col]...]")
+    puts("  curveCSVtoXML.rb [options] <FILE_NAME> tag:c1[:c2[:c3[:c4]]]...")
     puts("  One of the 'tag' values must be 'point' with three columns")
+    puts("OPTIONS")
+    puts("  -verbose Turn on verbose reporting to STDOUT")
+    puts("  -help    Print help mesage")
     puts("EXAMPLE")
     puts("  curveCSVtoXML.rb lorenz.csv point:3:4:5 't:2'")
     puts("")
@@ -106,6 +115,8 @@ if (verbose > 1) then
   STDERR.puts("Point cols: #{pointCols}")
   STDERR.puts("Scalar data: #{sclData.inspect}")
   STDERR.puts("Vector data: #{vecData.inspect}")
+  STDERR.puts("Time mode: #{time.inspect}")
+  STDERR.puts("Verbose mode: #{verbose.inspect}")
 end
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------
