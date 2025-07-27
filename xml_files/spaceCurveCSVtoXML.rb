@@ -32,27 +32,13 @@
 #  @endparblock
 # @filedetails
 #
-#  Provide the filename as the first argument.  The remaining arguments are of the form tag:c1[:c2[:c3[:c4]]].  One of the tags must be 'point' or 'points',
+#  Provide the filename as one argument.  The remaining arguments are of the form tag:c1[:c2[:c3[:c4]]].  One of the tags must be 'point' or 'points',
 #  and it must contain three columns.  The remainder of the arguments describe point data.
 #
 #########################################################################################################################################################.H.E.##
 
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------
 verbose = 0
-
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------
-if (ARGV.size <= 0) then
-  puts("ERROR: No arguments!")
-  puts("USE")
-  puts("  curveCSVtoXML.rb <FILE_NAME> [tag:col[:col]...]")
-  puts("  One of the 'tag' values must be 'point' with three columns")
-  puts("EXAMPLE")
-  puts("  curveCSVtoXML.rb lorenz.csv point:3:4:5 't:2'")
-  puts("")
-  exit
-end
-
-fileToProcess = ''
+fileToProcess = nil
 sclData = Hash.new
 vecData = Hash.new
 pointCols = Array.new
@@ -79,16 +65,34 @@ ARGV.each do |arg|
          vecData[tag] = cols
        end
      end
+  elsif (arg.match(/^-+[hH]/)) then
+    puts("USE")
+    puts("  curveCSVtoXML.rb <FILE_NAME> [tag:col[:col]...]")
+    puts("  One of the 'tag' values must be 'point' with three columns")
+    puts("EXAMPLE")
+    puts("  curveCSVtoXML.rb lorenz.csv point:3:4:5 't:2'")
+    puts("")
+    exit
+  elsif (arg.match(/^-+[vV]/)) then
+    verbose = 10
   else
     STDERR.puts("UNK: #{arg}")
-    STDERR.puts("Call command with no arguments for help")
+    STDERR.puts("Run with -h argument for help")
     exit
   end
 end
 
+if (fileToProcess.nil?) then
+  STDERR.puts("No file provided on command line!")
+  STDERR.puts("Run with -h argument for help")
+  exit
+end
+
 if ( pointCols.empty?) then
   pointCols = [0, 1, 2]
-  exit
+  if (verbose > 1) then
+    STDERR.puts("Using default point columns!")
+  end
 end
 
 [ ['x', 0], ['y', 1], ['z', 2]].each do |tag, col|
@@ -99,9 +103,9 @@ end
 
 if (verbose > 1) then
   STDERR.puts("File to process: #{fileToProcess.inspect}")
-  STDERR.puts("Point Cols: #{pointCols}")
-  STDERR.puts("Scalar items: #{sclData.inspect}")
-  STDERR.puts("Vector Data: #{vecData.inspect}")
+  STDERR.puts("Point cols: #{pointCols}")
+  STDERR.puts("Scalar data: #{sclData.inspect}")
+  STDERR.puts("Vector data: #{vecData.inspect}")
 end
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------
