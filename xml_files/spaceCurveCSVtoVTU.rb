@@ -2,10 +2,8 @@
 # -*- Mode:ruby; Coding:us-ascii; fill-column:158 -*-
 #########################################################################################################################################################.H.S.##
 ##
-# @file      curveCSVtoXML.rb
+# @file      spaceCurveCSVtoVTU.rb
 # @author    Mitch Richling http://www.mitchr.me/
-# @date      2025-07-26
-# @version   VERSION
 # @brief     Read a CSV file with points, and produce a VTK VTU file with a curve.@EOL
 # @std       Ruby 3
 # @see       https://github.com/richmit/ex-VTK/
@@ -37,7 +35,7 @@
 #
 #  One way to create an animation of curve evolution is to create time step vtu files:
 #    sh  -c 'for f in $(seq 100 100 5000); do head -n $f lorenz.csv > $(printf "lorenz_%05d.csv" $f); done'
-#    zsh -c 'for f in lorenz_*.csv(:r) ; do ./spaceCurveCSVtoXML.rb -v $f.csv points:3:4:5 > $f.vtu; done'
+#    zsh -c 'for f in lorenz_*.csv(:r) ; do ./spaceCurveCSVtoVTU.rb -v $f.csv points:3:4:5 > $f.vtu; done'
 #
 #########################################################################################################################################################.H.E.##
 
